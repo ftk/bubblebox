@@ -95,8 +95,8 @@ def group(*directives):
     return GroupDirective(directives)
 
 # Run the application in the bubblebox with the given flags.
-def bubblebox(*directives):
-    if len(sys.argv) <= 1:
+def bubblebox(*directives, argv=sys.argv[1:]):
+    if len(argv) == 0:
         print(f"USAGE: {sys.argv[0]} <program name> <program arguments>")
         sys.exit(1)
     # Make sure `--die-with-parent` is always set.
@@ -107,7 +107,7 @@ def bubblebox(*directives):
     for finalizer in bwrap.finalizers:
         finalizer(bwrap)
     # Run bwrap
-    args = ["/usr/bin/bwrap"] + bwrap.flags + ["--"] + sys.argv[1:]
+    args = ["/usr/bin/bwrap"] + bwrap.flags + ["--"] + argv
     #pprint(args)
     os.execvp(args[0], args)
 
