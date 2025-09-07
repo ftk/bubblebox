@@ -81,3 +81,16 @@ def DESKTOP(name):
     home_access({ ".mozilla/firefox/profiles.ini": Access.Read }),
     dbus_proxy_flags("--call=org.mozilla.firefox.*=@/org/mozilla/firefox/Remote"),
   )
+
+def is_sensitive(dir):
+    sensitive = [HOME, "/tmp", XDG_RUNTIME_DIR, HOME + "/.ssh", HOME + "/.mozilla"]
+    return any(s.startswith(dir) for s in sensitive)
+
+def WORKDIR():
+  cwd = os.getcwd()
+  if is_sensitive(cwd):
+    print("Warning: Trying to run jail from a sensitive dir: " + cwd)
+    return None
+  return host_access({
+    cwd: Access.Write,
+    })
