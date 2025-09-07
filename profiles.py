@@ -61,7 +61,8 @@ def DESKTOP(name):
     X11(),
     # Access to some key user configuration
     home_access({
-      (".config/fontconfig", ".XCompose", ".local/share/applications"): Access.Read,
+      (".config/fontconfig", ".config/glib-2.0", ".XCompose", ".local/share/applications", ".config/pulse/cookie"): Access.Read,
+      ".cache/mesa_shader_cache_db": Access.Write,
     }),
     # Access to basic d-bus services (that are hopefully safe to expose...)
     dbus_proxy_flags(
