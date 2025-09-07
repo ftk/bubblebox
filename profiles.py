@@ -70,7 +70,11 @@ def DESKTOP(name):
       "--call=org.freedesktop.Notifications=@/org/freedesktop/Notifications",
       "--call=org.freedesktop.ScreenSaver=@/org/freedesktop/ScreenSaver",
       "--call=org.freedesktop.ScreenSaver=@/ScreenSaver",
+      #"--talk=org.freedesktop.PowerManagement",
+      #"--talk=org.freedesktop.PowerManagement.Inhibit",
       "--talk=org.freedesktop.portal.*",
+      # MPRIS for video players
+      "--own=org.mpris.*",
     ),
     # Make it possible to open websites in Firefox
     home_access({ ".mozilla/firefox/profiles.ini": Access.Read }),
