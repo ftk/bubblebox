@@ -52,7 +52,10 @@ def DESKTOP(name):
         ("dri", "snd"): Access.Device,
       },
       XDG_RUNTIME_DIR: {
-        (os.environ["WAYLAND_DISPLAY"], "pulse"): Access.Read,
+        (os.environ["WAYLAND_DISPLAY"], # wayland
+         "pulse/native",  # pulseaudio
+         os.getenv("PIPEWIRE_REMOTE") or "pipewire-0" # pipewire
+         ): Access.Read,
       },
     }),
     X11(),
