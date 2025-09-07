@@ -7,6 +7,7 @@ DEFAULT = group(
   bwrap_flags("--unshare-user", "--unshare-pid", "--unshare-cgroup"),
   # A different hostname is useful to be able to see when we are inside the sandbox.
   # However, some applications will not like this unless the hostname also exists in `/etc/hosts`!
+  # Also, gnome-shell doesn't display window icons properly when this is set.
   #bwrap_flags("--unshare-uts", "--hostname", "bubblebox"),
   # Make sure the sandbox cannot inject commands into the host terminal.
   # TODO: This flag breaks some CLI applications, like job control in shells.
@@ -59,7 +60,9 @@ def DESKTOP(name):
       },
     }),
     X11(),
-    # Access to some key user configuration
+    # Access to some key user configuration.
+    # We set GSETTINGS_BACKEND to make GTK3 apps use the config file in ~/.config/glib-2.0.
+    # (The "right" solution here is probably the settings portal...)
     home_access({
       (".config/fontconfig", ".config/glib-2.0", ".XCompose", ".local/share/applications", ".config/pulse/cookie"): Access.Read,
       ".cache/mesa_shader_cache_db": Access.Write,
