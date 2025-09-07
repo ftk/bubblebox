@@ -2,7 +2,7 @@ import sys, os, glob, random, string, subprocess
 from pprint import pprint
 
 HOME = os.environ["HOME"]
-XDG_RUNTIME_DIR = os.environ["XDG_RUNTIME_DIR"]
+XDG_RUNTIME_DIR = os.getenv("XDG_RUNTIME_DIR") or "/tmp"
 BUBBLEBOX_DIR = XDG_RUNTIME_DIR + "/bubblebox"
 os.makedirs(BUBBLEBOX_DIR, exist_ok=True)
 
@@ -37,7 +37,8 @@ class GroupDirective:
         self.directives = directives
     def setup(self, bwrap):
         for directive in self.directives:
-            directive.setup(bwrap)
+            if directive is not None:
+                directive.setup(bwrap)
 
 class DbusProxyDirective:
     """Directive that sets up a d-bus proxy and adds flags to it.
@@ -114,6 +115,7 @@ def bubblebox(*directives):
 def shared_runtime_dir(boxname):
     dirname = BUBBLEBOX_DIR + "/" + boxname
     os.makedirs(dirname, exist_ok=True)
+    os.chmod(dirname, 0o700)
     return bwrap_flags("--bind", dirname, XDG_RUNTIME_DIR)
 
 # Convenient way to declare host access
@@ -124,11 +126,11 @@ class Access:
 
     def flag(val):
         if val == Access.Read:
-            return "--ro-bind"
+            return "--ro-bind-try"
         elif val == Access.Write:
-            return "--bind"
+            return "--bind-try"
         elif val == Access.Device:
-            return "--dev-bind"
+            return "--dev-bind-try"
         else:
             raise Exception(f"invalid access value: {val}")
 def host_access(dirs):
@@ -144,10 +146,7 @@ def host_access(dirs):
             path = path.replace("//", "/")
             path = path.removesuffix("/.")
             # glob expansion
-            globbed = glob.glob(path)
-            if len(globbed) == 0:
-                raise Exception(f"Path does not exist: {path}")
-            yield from globbed
+            yield path
     def recursive_host_access(root, dirs, out):
         for names, desc in dirs.items():
             for path in expand(root, names):
