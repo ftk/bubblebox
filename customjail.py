@@ -2,7 +2,7 @@
 from bubblebox import *
 import os
 import sys
-
+from profiles import is_sensitive
 
 args = sys.argv[1:]
 change_dir = None
